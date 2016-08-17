@@ -1,0 +1,75 @@
+/* add by fanl */
+/*文件上传控件样式*/
+a.files {
+	width:90px;
+	height:30px;
+	overflow:hidden;
+	display:block;
+	border:1px solid #BEBEBE;
+ 	background:url(../../jslib/jquery-easyui-1.3.2/themes/images/addFile.gif) left top no-repeat;
+	text-decoration:none;
+}
+a.files:hover {
+	background-color:#FFFFEE;
+	background-position:0 -30px;
+}
+/*file设为透明，并覆盖整个触发面*/
+a.files input {
+	margin-left:-350px;
+	font-size:30px;
+	cursor:pointer;
+	filter:alpha(opacity=0);
+	opacity:0;
+}
+/*取消点击时的虚线框*/
+a.files, a.files input {
+	outline:none;/*ff*/
+	hide-focus:expression(this.hideFocus=true);/*ie*/
+}
+
+.file_content{
+   width:100%;
+   height:auto;	
+   margin:2px;     
+}
+.file_div {
+	width: 280px;
+	height: 30px;
+	float: left;
+	position: relative;
+	margin: 0 8px 4px 0;
+	border-radius: 3px;
+	overflow: visible;	
+	background-color: #E3EAF4;
+}
+.file_div_name {
+	width: 200px;
+	height: 16px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: #666;
+	position: absolute;
+	left: 10px;
+	top: 4px;
+}
+.file_div_delete {
+	position: absolute;
+	right: 6px;
+	top: 5px;
+	font-size: 12px;
+}
+.file_div_link {
+	outline: 0;
+	cursor: pointer;
+	padding: 2px 4px 4px;
+	text-decoration: none;
+	border-radius: 3px;	
+}
+.file_div_delete a:hover{
+	background-color: #0F6099;
+	color:#fff;
+}
+
+
+

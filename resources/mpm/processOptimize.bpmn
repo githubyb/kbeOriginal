@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="成飞数控加工厂">
+  <process id="processOptimize" name="工艺优化流程" isExecutable="true">
+    <startEvent id="startevent1" name="Start" activiti:initiator="applyUserId"></startEvent>
+    <userTask id="leaderApproval" name="主管审批">
+      <documentation>{
+    "seqno":"1",
+    "type":"processOptimizationBusinessApproval",
+     "flow":"mpm",
+      "judgeKey":"leaderApproved",
+    "url":"/taskexecute/poBusinessApproval"
+}</documentation>
+    </userTask>
+    <inclusiveGateway id="inclusivegateway1" name="Inclusive Gateway"></inclusiveGateway>
+    <userTask id="doFO" name="关联FO">
+      <documentation>{
+    "seqno":"3",
+    "type":"data",
+     "flow":"pdm",
+    "dataType":"FO",
+    "sClassId":"CAPP",
+    "var1":"FOObjId",
+     "var2":"FOType",
+    "url":"/taskexecute/relDataHandlePage"
+}</documentation>
+    </userTask>
+    <userTask id="doNC" name="编制NC程序">
+      <documentation>{
+    "seqno":"7",
+    "type":"data",
+     "flow":"mpm",
+    "dataType":"NC",
+    "sClassId":"C_NC",
+     "var1":"NCObjId",
+     "var2":"NCType",
+    "url":"/taskexecute/dataHandlePage"
+}</documentation>
+    </userTask>
+    <userTask id="doDSC" name="关联工序说明书">
+      <documentation>{
+    "seqno":"5",
+    "type":"data",
+     "flow":"pdm",
+    "dataType":"DSC",
+    "sClassId":"CAPP",
+    "var1":"DSCObjId",
+     "var2":"DSCType",
+    "url":"/taskexecute/relDataHandlePage"
+}</documentation>
+    </userTask>
+    <callActivity id="submitNC" name="提交审签" calledElement="approveFlow">
+      <extensionElements>
+        <activiti:in source="NCObjId" target="objId"></activiti:in>
+        <activiti:in source="NCType" target="type"></activiti:in>
+        <activiti:in source="dataType" target="dataType"></activiti:in>
+      </extensionElements>
+    </callActivity>
+    <userTask id="FOfeedback" name="FO反馈">
+      <documentation>{
+   "seqno":"4",
+    "type":"final",
+     "flow":"mpm",
+     "var1":"FOObjId",
+     "var2":"FOType",
+    "url":"/taskexecute/feedbackPage"
+}</documentation>
+    </userTask>
+    <userTask id="NCfeedback" name="NC反馈">
+      <documentation>{
+    "seqno":"8",
+    "type":"final",
+     "flow":"mpm",
+     "var1":"NCObjId",
+     "var2":"NCType",
+      "url":"/taskexecute/feedbackPage"
+}</documentation>
+    </userTask>
+    <userTask id="DSCfeedback" name="工序说明书反馈">
+      <documentation>{
+    "seqno":"6",
+    "type":"final",
+     "flow":"mpm",
+    "var1":"DSCObjId",
+     "var2":"DSCType",
+    "url":"/taskexecute/feedbackPage"
+}</documentation>
+    </userTask>
+    <inclusiveGateway id="inclusivegateway2" name="Inclusive Gateway"></inclusiveGateway>
+    <endEvent id="endevent1" name="End">
+      <extensionElements>
+        <activiti:executionListener event="start" class="edu.nwpu.dmpm.kbe.taskexecute.listener.TaskCompleteListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="flow3" sourceRef="inclusivegateway1" targetRef="doFO">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${doFO=='true'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="inclusivegateway1" targetRef="doNC">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${doNC=='true'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="inclusivegateway1" targetRef="doDSC">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${doDSC=='true'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow7" sourceRef="doNC" targetRef="submitNC"></sequenceFlow>
+    <sequenceFlow id="flow8" sourceRef="doDSC" targetRef="DSCfeedback"></sequenceFlow>
+    <sequenceFlow id="flow10" sourceRef="submitNC" targetRef="NCfeedback"></sequenceFlow>
+    <sequenceFlow id="flow11" sourceRef="FOfeedback" targetRef="inclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="flow12" sourceRef="NCfeedback" targetRef="inclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="flow13" sourceRef="DSCfeedback" targetRef="inclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="flow14" sourceRef="inclusivegateway2" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow15" sourceRef="startevent1" targetRef="leaderApproval"></sequenceFlow>
+    <sequenceFlow id="flow16" sourceRef="doFO" targetRef="FOfeedback"></sequenceFlow>
+    <boundaryEvent id="boundaryerror1" name="Error" attachedToRef="submitNC">
+      <errorEventDefinition errorRef="REJECT"></errorEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="flow17" sourceRef="boundaryerror1" targetRef="doNC"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow18" sourceRef="leaderApproval" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="reApply" name="重新申请">
+      <documentation>{
+    "seqno":"2",
+    "type":"processOptimizaionApply",
+     "flow":"mpm",
+    "url":"/taskexecute/reProcessOptimizaionApply"
+}</documentation>
+    </userTask>
+    <sequenceFlow id="flow19" sourceRef="exclusivegateway1" targetRef="inclusivegateway1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="edu.nwpu.dmpm.kbe.taskexecute.listener.AuditApproveListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${leaderApproved=='true'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow20" sourceRef="exclusivegateway1" targetRef="reApply">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${leaderApproved=='false'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow21" sourceRef="reApply" targetRef="leaderApproval"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_processOptimize">
+    <bpmndi:BPMNPlane bpmnElement="processOptimize" id="BPMNPlane_processOptimize">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="71.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="leaderApproval" id="BPMNShape_leaderApproval">
+        <omgdc:Bounds height="55.0" width="105.0" x="36.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="inclusivegateway1" id="BPMNShape_inclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="249.0" y="127.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="doFO" id="BPMNShape_doFO">
+        <omgdc:Bounds height="55.0" width="105.0" x="329.0" y="34.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="doNC" id="BPMNShape_doNC">
+        <omgdc:Bounds height="55.0" width="105.0" x="329.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="doDSC" id="BPMNShape_doDSC">
+        <omgdc:Bounds height="55.0" width="105.0" x="329.0" y="214.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="submitNC" id="BPMNShape_submitNC">
+        <omgdc:Bounds height="55.0" width="105.0" x="466.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundaryerror1" id="BPMNShape_boundaryerror1">
+        <omgdc:Bounds height="30.0" width="30.0" x="541.0" y="147.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="FOfeedback" id="BPMNShape_FOfeedback">
+        <omgdc:Bounds height="55.0" width="105.0" x="606.0" y="34.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="NCfeedback" id="BPMNShape_NCfeedback">
+        <omgdc:Bounds height="55.0" width="105.0" x="606.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DSCfeedback" id="BPMNShape_DSCfeedback">
+        <omgdc:Bounds height="55.0" width="105.0" x="606.0" y="214.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="inclusivegateway2" id="BPMNShape_inclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="758.0" y="127.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="818.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="176.0" y="127.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reApply" id="BPMNShape_reApply">
+        <omgdc:Bounds height="55.0" width="105.0" x="144.0" y="201.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="269.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="269.0" y="61.0"></omgdi:waypoint>
+        <omgdi:waypoint x="329.0" y="61.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="289.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="329.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="269.0" y="167.0"></omgdi:waypoint>
+        <omgdi:waypoint x="269.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="329.0" y="241.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="434.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="466.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="434.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="606.0" y="241.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="571.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="606.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="711.0" y="61.0"></omgdi:waypoint>
+        <omgdi:waypoint x="778.0" y="61.0"></omgdi:waypoint>
+        <omgdi:waypoint x="778.0" y="127.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="711.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="758.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="711.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="778.0" y="241.0"></omgdi:waypoint>
+        <omgdi:waypoint x="778.0" y="167.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="798.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="818.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="88.0" y="65.0"></omgdi:waypoint>
+        <omgdi:waypoint x="88.0" y="120.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="434.0" y="61.0"></omgdi:waypoint>
+        <omgdi:waypoint x="606.0" y="61.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="556.0" y="177.0"></omgdi:waypoint>
+        <omgdi:waypoint x="517.0" y="214.0"></omgdi:waypoint>
+        <omgdi:waypoint x="517.0" y="214.0"></omgdi:waypoint>
+        <omgdi:waypoint x="462.0" y="214.0"></omgdi:waypoint>
+        <omgdi:waypoint x="381.0" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="141.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="176.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="216.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="249.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="196.0" y="167.0"></omgdi:waypoint>
+        <omgdi:waypoint x="196.0" y="201.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
+        <omgdi:waypoint x="144.0" y="228.0"></omgdi:waypoint>
+        <omgdi:waypoint x="88.0" y="228.0"></omgdi:waypoint>
+        <omgdi:waypoint x="88.0" y="175.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
+
+	<!-- 自动扫描且只扫描@Controller -->
+	<context:component-scan base-package="edu.nwpu.dmpm.kbe" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+	</context:component-scan>
+
+   <!--  <mvc:annotation-driven /> -->
+    <!-- Spring MVC JSON配置 -->
+    <mvc:annotation-driven>
+	   <mvc:message-converters register-defaults="true">
+		<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"
+			p:supportedMediaTypes="text/html;charset=UTF-8" />
+	      </mvc:message-converters>
+     </mvc:annotation-driven>
+     
+      <!--  <mvc:annotation-driven>
+	   <mvc:message-converters register-defaults="true">
+		<bean class="edu.nwpu.dmpm.kbe.common.util.FastJsonHttpMessageConverter"
+			p:supportedMediaTypes="text/html;charset=UTF-8" />
+	      </mvc:message-converters>
+     </mvc:annotation-driven> -->
+     
+    <!--  <bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"
+		p:messageConverters-ref="messageConverters"></bean>
+
+	 <util:list id="messageConverters">
+		<bean
+			class="org.springframework.http.converter.BufferedImageHttpMessageConverter" />
+		<bean
+			class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+		<bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+		<bean
+			class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+	</util:list> -->
+
+	<!-- 定义首页 -->
+	<mvc:view-controller path="/" view-name="redirect:/login.jsp" />
+
+	<!-- 定义JSP -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- 文件上传配置 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding">
+			<value>UTF-8</value>
+		</property>
+		<property name="maxUploadSize">
+			<value>32505856</value>
+		</property>
+		<property name="maxInMemorySize">
+			<value>4096</value>
+		</property>
+	</bean>
+	
+	<!-- 拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean class="edu.nwpu.dmpm.kbe.system.interceptors.SecurityInterceptor">
+				<!-- 不需要权限验证的地址 -->
+				<property name="excludeUrls">
+					<list>
+						<value>/initController/init</value><!-- 初始化数据库 -->
+						<value>/resourceController/tree</value><!-- 首页左侧功能菜单 -->
+						<value>/userController/reg</value><!-- 用户注册 -->
+						<value>/userController/login</value><!-- 用户登录 -->
+						<value>/userController/loginCombobox</value><!-- 用户登录里面的autocomplete功能 -->
+						<value>/userController/loginCombogrid</value><!-- 用户登录里面的combogrid功能 -->
+						<value>/userController/logout</value><!-- 注销登录 -->
+						<value>/resourceController/allTree</value><!-- 角色访问资源下拉树 -->
+						<value>/roleController/tree</value><!-- 用户访问角色树(只能看到自己拥有的角色) -->
+						<value>/roleController/allTree</value><!-- 用户访问角色树 -->
+						<value>/userController/editCurrentUserPwdPage</value><!-- 用户修改自己的密码页面 -->
+						<value>/userController/editCurrentUserPwd</value><!-- 用户修改自己的密码 -->
+						<value>/userController/currentUserRolePage</value><!-- 查看自己的角色页面 -->
+						<value>/userController/currentUserResourcePage</value><!-- 查看自己的权限页面 -->
+						<value>/systemAccess/avicit</value><!-- avicitlogin 2014.11.6-->
+						<value>/userController/userMessage</value><!-- 显示用户不存在 2014.11.6-->
+						<value>/foViewController/index</value>
+						<value>/foViewController/process</value>
+						<value>/foViewController/oper</value>
+						<value>/foViewController/step</value>	
+						<value>/foViewController/ocx</value>											
+					</list>
+				</property>
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+</beans>

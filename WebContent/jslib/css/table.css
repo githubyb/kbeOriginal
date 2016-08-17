@@ -1,0 +1,52 @@
+﻿body
+{
+    font-size: 10pt;
+}
+label
+{
+	diasplay:inline;
+}
+.txtWidth_1
+{
+    width: 300px;
+    height: 18px;
+}
+.txtWidth_2
+{
+    width: 200px;
+    height: 18px;
+}
+.txtWidth_3
+{
+    width: 90px;
+    height: 18px;
+}
+table
+{
+    border: 1px solid #99BBE8;
+    border-collapse: collapse;
+}
+table td
+{
+    border: 1px solid #99BBE8;
+    padding: 6px;
+}
+td[align="right"]
+{
+    background: #EFEFEF;
+}
+input[type="button"]
+{
+    width: 80px;    
+}
+.select{
+	background:#fafdfe;
+	height:25px;
+	width:200px;
+	line-height:25px;
+	border:1px solid #9bc0dd;
+	-moz-border-radius:2px;
+	-webkit-border-radius:2px;
+	border-radius:2px;
+	margin-bottom:2px;
+}
