@@ -29,13 +29,13 @@
 		<div id="layout_east_onlinePanel" data-options="fit:true,border:false" title="问题处理中心">
 			<div class="well well-small" style="margin: 3px;">
 				<div>
-					<span class="label label-important">技术支持</span><br /> 西北工业大学制造软件研究所技术二部
+					<span class="label label-important">技术支持</span><br /> ********
 					</div>
 				<div>
-					<span class="label label-success">联系电话</span><br />029-88491371
+					<span class="label label-success">联系电话</span><br />029-********
 				</div>
 				<div>
-					<span class="label label-important">电子邮件</span><br />email:wangc1217@126.com
+					<span class="label label-important">电子邮件</span><br />email:********
 				</div>
 			</div>
 		</div>
