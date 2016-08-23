@@ -10,10 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.nwpu.dmpm.kbe.common.util.MD5Util;
 import edu.nwpu.dmpm.kbe.system.dao.BugDaoI;
 import edu.nwpu.dmpm.kbe.system.dao.BugTypeDaoI;
+import edu.nwpu.dmpm.kbe.system.dao.PassWordRuleDaoI;
 import edu.nwpu.dmpm.kbe.system.dao.ResourceDaoI;
 import edu.nwpu.dmpm.kbe.system.dao.ResourceTypeDaoI;
 import edu.nwpu.dmpm.kbe.system.dao.RoleDaoI;
 import edu.nwpu.dmpm.kbe.system.dao.UserDaoI;
+import edu.nwpu.dmpm.kbe.system.model.TPassWordRule;
 import edu.nwpu.dmpm.kbe.system.model.Tbugtype;
 import edu.nwpu.dmpm.kbe.system.model.Tresource;
 import edu.nwpu.dmpm.kbe.system.model.Tresourcetype;
@@ -42,6 +44,10 @@ public class InitServiceImpl implements InitService {
 
 	@Autowired
 	private BugTypeDaoI bugTypeDao;
+	
+	@Autowired
+	private PassWordRuleDaoI ruleDao;
+	
 
 	@Override
 	synchronized public void init() {
@@ -55,8 +61,12 @@ public class InitServiceImpl implements InitService {
 		initRole();// 初始化角色
 
 		initUser();// 初始化用户
+		
+		initPasswordRule();//初始化用户密码规则
 
 	}
+
+	
 
 	private void initBugType() {
 		Tbugtype cw = new Tbugtype();
@@ -454,7 +464,7 @@ public class InitServiceImpl implements InitService {
 		bugglView.setIcon("bug_link");
 		resourceDao.saveOrUpdate(bugglView);
 
-		Tresource sjygl = new Tresource();
+		/*Tresource sjygl = new Tresource();
 		sjygl.setId("sjygl");
 		sjygl.setName("数据源管理");
 		sjygl.setTresourcetype(menuType);
@@ -462,7 +472,7 @@ public class InitServiceImpl implements InitService {
 		sjygl.setSeq(5);
 		sjygl.setUrl("/druidController/druid");
 		sjygl.setIcon("icon-bill");
-		resourceDao.saveOrUpdate(sjygl);
+		resourceDao.saveOrUpdate(sjygl);*/
 
 		Tresource wjgl = new Tresource();
 		wjgl.setId("wjgl");
@@ -658,4 +668,39 @@ public class InitServiceImpl implements InitService {
 		guest.getTroles().addAll(roleDao.find("from Trole t where t.id = 'guest'"));// 给用户赋予Guest角色
 		userDao.saveOrUpdate(guest);
 	}
+	private void initPasswordRule() {
+		// TODO Auto-generated method stub
+		TPassWordRule rule1 = new TPassWordRule();
+		rule1.setId("1");
+		rule1.setFlag("ture");
+		rule1.setName("最小位数");
+		rule1.setRegex("6");
+		ruleDao.saveOrUpdate(rule1);
+		TPassWordRule rule2 = new TPassWordRule();
+		rule2.setId("2");
+		rule2.setFlag("ture");
+		rule2.setName("最大位数");
+		rule2.setRegex("20");
+		ruleDao.saveOrUpdate(rule2);
+		TPassWordRule rule3 = new TPassWordRule();
+		rule3.setId("3");
+		rule3.setFlag("false");
+		rule3.setName("必须包含数字");
+		rule3.setRegex("[0-9]+?");
+		ruleDao.saveOrUpdate(rule3);
+		TPassWordRule rule4 = new TPassWordRule();
+		rule4.setId("4");
+		rule4.setFlag("on");
+		rule4.setName("必须包含字母");
+		rule4.setRegex(".*[a-zA-Z]+.*");
+		ruleDao.saveOrUpdate(rule4);
+		TPassWordRule rule5 = new TPassWordRule();
+		rule5.setId("5");
+		rule5.setFlag("false");
+		rule5.setName("必须包含特殊字符");
+		rule5.setRegex("((?=[\\x21-\\x7e]+)[^A-Za-z0-9])");
+		ruleDao.saveOrUpdate(rule5);
+		
+	}
+	
 }
